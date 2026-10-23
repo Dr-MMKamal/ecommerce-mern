@@ -17,11 +17,18 @@ const adminPageRoutes = require('./routes/adminPageRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
+const clientOrigins = new Set([
+  'https://dr-mmkamal.github.io',
+  ...(process.env.CLIENT_URL || 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+]);
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => callback(null, !origin || clientOrigins.has(origin)),
     credentials: true,
   })
 );

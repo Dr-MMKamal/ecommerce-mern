@@ -30,7 +30,13 @@ jobs:
 
       - name: Build frontend
         working-directory: frontend
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://ecommerce-mern-1-7a1o.onrender.com' }}
         run: npm run build
+
+      - name: Configure GitHub Pages SPA fallback
+        working-directory: frontend
+        run: cp dist/index.html dist/404.html
 
       - name: Upload frontend files
         uses: actions/upload-pages-artifact@v3

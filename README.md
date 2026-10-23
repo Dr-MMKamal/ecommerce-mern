@@ -139,8 +139,14 @@ decremented on order (and restored on cancellation).
 ## Before going to production
 
 - Set a strong `JWT_SECRET`, `NODE_ENV=production`, and serve everything over HTTPS.
-- If the frontend and API are on different domains, set `CLIENT_URL` on the API and `VITE_API_URL`
-  on the frontend (cookies then use `SameSite=None; Secure`). Same-site subdomains are simpler.
+- For the GitHub Pages deployment in this repository, the workflow builds with
+  `https://ecommerce-mern-1-7a1o.onrender.com` as the API origin. If your Render service URL differs,
+  set the GitHub repository Actions variable `VITE_API_URL` to that origin (without a trailing slash).
+  The backend allows the Pages origin `https://dr-mmkamal.github.io` and any origins listed in Render's
+  `CLIENT_URL` variable (comma-separated, without repository paths). Update that variable for any
+  additional frontend domain and redeploy the backend. Cross-site authentication cookies require HTTPS
+  and may be restricted by browser third-party-cookie settings; hosting the frontend and API on same-site
+  domains is more reliable.
 - Add real payment processing (Stripe, SSLCommerz, bKash, etc.) — currently orders are Cash on Delivery;
   the "Card" option only records the method.
 - Store uploads in object storage (S3/Cloudinary) instead of local disk.
