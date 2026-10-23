@@ -6,6 +6,8 @@ import ProductCard from '../components/ProductCard';
 import Pagination from '../components/Pagination';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import SampleProductCard from '../components/SampleProductCard';
+import demoProducts from '../data/demoProducts';
 
 export default function Shop() {
   const dispatch = useDispatch();
@@ -18,6 +20,13 @@ export default function Shop() {
   const minPrice = params.get('minPrice') || '';
   const maxPrice = params.get('maxPrice') || '';
   const currentPage = Number(params.get('page')) || 1;
+  const showSampleProducts =
+    items.length === 0 &&
+    !keyword &&
+    !category &&
+    !minPrice &&
+    !maxPrice &&
+    currentPage === 1;
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -76,14 +85,26 @@ export default function Shop() {
         <Message>{error}</Message>
         {loading ? (
           <Loader />
-        ) : items.length === 0 ? (
-          <p className="muted">No products found.</p>
-        ) : (
+        ) : items.length > 0 ? (
           <div className="grid">
             {items.map((p) => (
               <ProductCard key={p._id} product={p} />
             ))}
           </div>
+        ) : showSampleProducts ? (
+          <>
+            {error && <Message>{error}</Message>}
+            <div className="grid">
+              {demoProducts.map((product) => (
+                <SampleProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <Message>{error}</Message>
+            {!error && <p className="muted">No products found.</p>}
+          </>
         )}
         <Pagination page={page} pages={pages} onChange={(n) => update('page', String(n))} />
       </section>

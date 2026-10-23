@@ -48,6 +48,8 @@ const productSlice = createSlice({
   initialState: {
     items: [],
     featured: [],
+    featuredStatus: 'idle',
+    featuredError: null,
     categories: [],
     current: null,
     page: 1,
@@ -77,6 +79,16 @@ const productSlice = createSlice({
       })
       .addCase(fetchFeatured.fulfilled, (s, { payload }) => {
         s.featured = payload;
+        s.featuredStatus = 'succeeded';
+        s.featuredError = null;
+      })
+      .addCase(fetchFeatured.pending, (s) => {
+        s.featuredStatus = 'loading';
+        s.featuredError = null;
+      })
+      .addCase(fetchFeatured.rejected, (s, { payload }) => {
+        s.featuredStatus = 'failed';
+        s.featuredError = payload;
       })
       .addCase(fetchProduct.pending, (s) => {
         s.loading = true;

@@ -3,10 +3,14 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFeatured, fetchCategories } from '../features/product/productSlice';
 import ProductCard from '../components/ProductCard';
+import Message from '../components/Message';
+import Loader from '../components/Loader';
+import SampleProductCard from '../components/SampleProductCard';
+import demoProducts from '../data/demoProducts';
 
 export default function Home() {
   const dispatch = useDispatch();
-  const { featured, categories } = useSelector((s) => s.products);
+  const { featured, categories, featuredStatus, featuredError } = useSelector((s) => s.products);
 
   useEffect(() => {
     dispatch(fetchFeatured());
@@ -25,27 +29,42 @@ export default function Home() {
         </div>
       </section>
 
-      <section>
-        <h2>Shop by category</h2>
-        <div className="chips">
-          {categories.map((c) => (
-            <Link key={c._id} to={`/shop?category=${c._id}`} className="chip">
-              {c.name}
-            </Link>
-          ))}
-        </div>
-      </section>
+      {categories.length > 0 && (
+        <section>
+          <h2>Shop by category</h2>
+          <div className="chips">
+            {categories.map((c) => (
+              <Link key={c._id} to={`/shop?category=${c._id}`} className="chip">
+                {c.name}
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section>
         <div className="row between">
           <h2>Featured products</h2>
           <Link to="/shop">View all →</Link>
         </div>
-        <div className="grid">
-          {featured.map((p) => (
-            <ProductCard key={p._id} product={p} />
-          ))}
-        </div>
+        {featuredStatus === 'loading' || featuredStatus === 'idle' ? (
+          <Loader />
+        ) : featuredStatus === 'succeeded' && featured.length > 0 ? (
+          <div className="grid">
+            {featured.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        ) : (
+          <>
+            {featuredStatus === 'failed' && <Message>{featuredError}</Message>}
+            <div className="grid">
+              {demoProducts.map((product) => (
+                <SampleProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </>
+        )}
       </section>
     </>
   );
