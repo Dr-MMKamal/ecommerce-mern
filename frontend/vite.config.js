@@ -5,6 +5,8 @@ import react from '@vitejs/plugin-react';
 // httpOnly JWT cookie works without any cross-site cookie configuration.
 export default defineConfig({
   plugins: [react()],
+  base: '/ecommerce-mern/',
+
   server: {
     port: 5173,
     proxy: {
@@ -13,3 +15,4 @@ export default defineConfig({
     },
   },
 });
+
